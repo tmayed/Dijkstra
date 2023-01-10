@@ -10,10 +10,11 @@ import numpy as np
 
 def main():
 
-
     #############################
-    # set up
-
+    
+    source = 0
+    target = 3
+    
     conns = [
         [0,1,1],
         [1,3,2],
@@ -32,11 +33,6 @@ def main():
     for conn in conns:
         graphs[graph_pos[conn[0]]].outputs.append(conn[1])
         graphs[graph_pos[conn[0]]].output_dists.append(conn[2])
-        graphs[graph_pos[conn[1]]].inputs.append(conn[0])
-        graphs[graph_pos[conn[1]]].input_dists.append(conn[2])
-
-    source = 0
-    target = 3
 
     #############################
 
@@ -79,18 +75,8 @@ def main():
 class node():
     def __init__(self,id):
         self.id = id
-        self.inputs = []
-        self.input_dists = []
         self.outputs = []
         self.output_dists = []
-    def __str__(self):
-        return f'''
-            id: {self.id},
-            outputs: {self.outputs},
-            output_dists: {self.output_dists},
-            inputs: {self.inputs},
-            input_dists: {self.input_dists}            
-        '''
 
 #################################################################################
 #################################################################################
