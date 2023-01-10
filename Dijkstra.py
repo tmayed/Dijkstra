@@ -13,16 +13,34 @@ def main():
     #############################
     
     source = 0
-    target = 3
+    target = 10
     
+    faults = []    
+
     conns = [
         [0,1,1],
-        [1,3,2],
-        [0,2,1],
-        [2,3,1]
+        [0,2,2],
+        [0,3,3],
+        [1,4,2],
+        [2,4,3],
+        [2,5,1],
+        [2,6,4],
+        [3,5,2],
+        [4,8,3],
+        [5,7,4],
+        [5,9,5],
+        [6,8,4],        
+        [7,10,2],
+        [8,10,1],
+        [9,10,1]
     ]
 
-    node_ids = list(set([x[0] for x in conns]+[x[1] for x in conns]))
+    working_conns = []
+    for x in conns:
+        if len(set(x).intersection(set(faults))) == 0:
+            working_conns.append(x)
+
+    node_ids = list(set([x[0] for x in working_conns]+[x[1] for x in working_conns]))
 
     graphs = []
     graph_pos = {}
@@ -30,9 +48,13 @@ def main():
         graphs.append(node(node_id))
         graph_pos[node_id] = len(graphs)-1
 
-    for conn in conns:
+    for conn in working_conns:
         graphs[graph_pos[conn[0]]].outputs.append(conn[1])
         graphs[graph_pos[conn[0]]].output_dists.append(conn[2])
+
+        # bi-directional
+        graphs[graph_pos[conn[1]]].outputs.append(conn[0])
+        graphs[graph_pos[conn[1]]].output_dists.append(conn[2])
 
     #############################
 
@@ -43,7 +65,8 @@ def main():
         dist[node_id] = np.inf
         prev[node_id] = np.nan
         Q.append(node_id)
-    dist[0] = 0
+    dist[source] = 0
+    dist[target] = np.inf
 
     while len(Q) > 0:
         dist_in_Q = {k:dist[k] for k in dist if k in Q}
@@ -60,14 +83,15 @@ def main():
 
     path = []
     u = target
-    path.append(u)
-    while True:
-        path.append(prev[u])
-        u = prev[u]
-        if u == source:
-            break
+    if dist[u] != np.inf:
+        path.append(u)
+        while True:
+            path.append(prev[u])
+            u = prev[u]
+            if u == source:
+                break
     path.reverse()
-    print(path)
+    print(f'shortest path: {path}')
 
 #################################################################################
 #################################################################################
